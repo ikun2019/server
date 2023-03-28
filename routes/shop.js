@@ -1,8 +1,20 @@
 const router = require('express').Router();
-const productsController = require('../controllers/products');
+const shopsController = require('../controllers/shops');
 
-// * 商品一覧 => /shop
+// * トップ => /index
 // UI表示 => GET
-router.get('/', productsController.getProducts);
+router.get('/', shopsController.getIndex);
+
+// * 商品一覧 => /products
+// UI表示 => GET
+router.get('/products', shopsController.getProducts);
+
+// * cartページの取得 => /cart
+// UI表示 => GET
+router.get('/cart', shopsController.getCart);
+
+// * cartページの取得 => /checkout
+// UI表示 => GET
+router.get('/checkout', shopsController.getCheckout);
 
 module.exports = router;

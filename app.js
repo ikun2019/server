@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // * routerのマウント
 app.use('/admin', adminRouter);
-app.use('/shop', shopRouter);
+app.use('/', shopRouter);
 // 404エラー
 app.use(errorsController.get404);
 
