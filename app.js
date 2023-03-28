@@ -3,6 +3,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 dotenv.config();
 const rootDir = require('./util/path');
+const sequelize = require('./config/database');
 
 // * routerの読み込み
 const adminRouter = require('./routes/admin');
@@ -24,6 +25,13 @@ app.use('/', shopRouter);
 app.use(errorsController.get404);
 
 // * サーバーの起動
-app.listen(process.env.PORT, () => {
-  console.log('サーバー起動'.bgGreen);
-});
+sequelize
+  .sync()
+  .then(result => {
+    app.listen(process.env.PORT, () => {
+      console.log('サーバー起動'.bgGreen);
+    });
+  })
+  .catch(err => {
+    console.log(err);
+  });
