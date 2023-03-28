@@ -2,6 +2,7 @@ const colors = require('colors');
 const express = require('express');
 const dotenv = require('dotenv');
 dotenv.config();
+const rootDir = require('./util/path');
 
 // * routerの読み込み
 const adminRouter = require('./routes/admin');
