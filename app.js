@@ -8,6 +8,9 @@ const rootDir = require('./util/path');
 const adminRouter = require('./routes/admin');
 const shopRouter = require('./routes/shop');
 
+// * controllerの読み込み
+const errorsController = require('./controllers/errors');
+
 // * appの初期化
 const app = express();
 
@@ -18,9 +21,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/admin', adminRouter);
 app.use('/shop', shopRouter);
 // 404エラー
-app.use((req, res, next) => {
-  res.status(404).send('404');
-});
+app.use(errorsController.get404);
 
 // * サーバーの起動
 app.listen(process.env.PORT, () => {
