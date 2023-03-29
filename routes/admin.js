@@ -17,4 +17,8 @@ router.get('/products/:productId', adminController.getEditProduct);
 // 機能 => PUT
 router.put('/products/:productId', adminController.postEditProduct);
 
+// * 商品削除=> /admin/products/:productId
+// 機能 => DELETE
+router.delete('/products/:productId', adminController.postDeleteProduct);
+
 module.exports = router;

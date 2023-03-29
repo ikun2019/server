@@ -7,7 +7,7 @@ exports.getAddProduct = (req, res, next) => {
     success: true,
     message: 'Add Product Page'
   });
-}
+};
 // 機能 => POST
 exports.postAddProduct = async (req, res, next) => {
   const title = req.body.title;
@@ -59,7 +59,7 @@ exports.getEditProduct = async (req, res, next) => {
       message: err.message
     });
   }
-}
+};
 // 機能 => PUT
 exports.postEditProduct = async (req, res, next) => {
   const prodId = req.params.productId;
@@ -84,4 +84,23 @@ exports.postEditProduct = async (req, res, next) => {
       message: err.message
     });
   }
-}
+};
+
+// * 商品削除=> /admin/products/:productId
+// 機能 => DELETE
+exports.postDeleteProduct = async (req, res, next) => {
+  const prodId = req.params.productId;
+  try {
+    const product = await Product.findOne({ where: { id: prodId } });
+    await product.destroy();
+    res.status(200).json({
+      success: true,
+      message: 'Productを削除しました'
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
