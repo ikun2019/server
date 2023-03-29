@@ -5,6 +5,10 @@ dotenv.config();
 const rootDir = require('./util/path');
 const sequelize = require('./config/database');
 
+// * モデルの読み込み
+const Product = require('./models/Product');
+const User = require('./models/User');
+
 // * routerの読み込み
 const adminRouter = require('./routes/admin');
 const shopRouter = require('./routes/shop');
@@ -25,9 +29,26 @@ app.use('/', shopRouter);
 // 404エラー
 app.use(errorsController.get404);
 
+// * アソシエーション
+User.hasMany(Product);
+Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
+
 // * サーバーの起動
 sequelize
   .sync({ alter: true })
+  // .sync({ force: true })
+  .then(result => {
+    return User.findByPk(1);
+  })
+  .then(user => {
+    if (!user) {
+      return User.create({ name: 'max', email: 'dummy@test.com' });
+    }
+    return user;
+  })
+  .then(user => {
+    console.log('User =>'.bgMagenta, user);
+  })
   .then(result => {
     app.listen(process.env.PORT, () => {
       console.log('サーバー起動'.bgGreen);
