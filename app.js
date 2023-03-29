@@ -26,9 +26,10 @@ app.use(errorsController.get404);
 
 // * サーバーの起動
 sequelize
-  .sync()
+  .sync({ alter: true })
   .then(result => {
     app.listen(process.env.PORT, () => {
+      console.log(result);
       console.log('サーバー起動'.bgGreen);
     });
   })

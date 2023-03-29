@@ -1,3 +1,5 @@
+const Product = require('../models/Product');
+
 // * 商品追加ページ => /admin/add-product
 // UI表示 => GET
 exports.getAddProduct = (req, res, next) => {

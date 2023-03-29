@@ -1,3 +1,5 @@
+const Product = require('../models/Product');
+
 // * トップ => /products
 // UI表示 => GET
 exports.getProducts = (req, res, next) => {
