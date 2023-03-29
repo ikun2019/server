@@ -42,3 +42,46 @@ exports.getProducts = (req, res, next) => {
     pageTitle: '商品一覧ページ'
   });
 };
+
+// * 商品編集=> /admin/products/:productId
+// UI表示 => GET
+exports.getEditProduct = async (req, res, next) => {
+  const prodId = req.params.productId;
+  try {
+    const product = await Product.findOne({ where: { id: prodId } });
+    res.status(200).json({
+      success: true,
+      product: product
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+}
+// 機能 => PUT
+exports.postEditProduct = async (req, res, next) => {
+  const prodId = req.params.productId;
+  const updatedTitle = req.body.title;
+  const updatedPrice = req.body.price;
+  const updatedImageUrl = req.body.imageUrl;
+  const updatedDescription = req.body.description;
+  try {
+    const product = await Product.findOne({ where: { id: prodId } });
+    product.title = updatedTitle;
+    product.price = updatedPrice;
+    product.imageUrl = updatedImageUrl;
+    product.description = updatedDescription;
+    await product.save();
+    res.status(200).json({
+      success: true,
+      message: 'Updated a Product'
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+}

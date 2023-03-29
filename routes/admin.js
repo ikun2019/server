@@ -11,4 +11,10 @@ router.post('/add-product', adminController.postAddProduct);
 // UI表示 GET
 router.get('/products', adminController.getProducts);
 
+// * 商品編集=> /admin/products/:productId
+// UI表示 => GET
+router.get('/products/:productId', adminController.getEditProduct);
+// 機能 => PUT
+router.put('/products/:productId', adminController.postEditProduct);
+
 module.exports = router;
