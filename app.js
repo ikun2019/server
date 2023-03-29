@@ -23,6 +23,16 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+// * ユーザーのミドルウェア
+app.use(async (req, res, next) => {
+  try {
+    req.user = await User.findByPk(1);
+    next();
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 // * routerのマウント
 app.use('/admin', adminRouter);
 app.use('/', shopRouter);
@@ -45,9 +55,6 @@ sequelize
       return User.create({ name: 'max', email: 'dummy@test.com' });
     }
     return user;
-  })
-  .then(user => {
-    console.log('User =>'.bgMagenta, user);
   })
   .then(result => {
     app.listen(process.env.PORT, () => {
