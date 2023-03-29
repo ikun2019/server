@@ -17,6 +17,7 @@ const app = express();
 
 // * appの設定
 app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 // * routerのマウント
 app.use('/admin', adminRouter);
@@ -29,7 +30,6 @@ sequelize
   .sync({ alter: true })
   .then(result => {
     app.listen(process.env.PORT, () => {
-      console.log(result);
       console.log('サーバー起動'.bgGreen);
     });
   })

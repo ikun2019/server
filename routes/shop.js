@@ -9,6 +9,10 @@ router.get('/', shopsController.getIndex);
 // UI表示 => GET
 router.get('/products', shopsController.getProducts);
 
+// * 単一商品 => /products/:productId
+// UI表示 => GET
+router.get('/products/:productId', shopsController.getProduct);
+
 // * cartページの取得 => /cart
 // UI表示 => GET
 router.get('/cart', shopsController.getCart);
