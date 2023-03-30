@@ -71,6 +71,7 @@ exports.getCart = async (req, res, next) => {
 exports.postCart = async (req, res, next) => {
   const prodId = req.params.productId;
   let fetchedCart;
+  let newQuantity = 1;
   try {
     const cart = await req.user.getCart();
     fetchedCart = cart;
@@ -80,15 +81,19 @@ exports.postCart = async (req, res, next) => {
     if (cartProducts.length > 0) {
       cartProduct = cartProducts[0];
     }
-    let newQuantity = 1;
     if (cartProduct) {
-      // TODO:
+      const oldQuantity = cartProduct.cartItem.quantity;
+      newQuantity = oldQuantity + 1;
+      fetchedCart.addProduct(cartProduct, {
+        through: { quantity: newQuantity }
+      });
+    } else {
+      // 商品が格納されていない場合
+      const product = await Product.findByPk(prodId);
+      fetchedCart.addProduct(product, {
+        through: { quantity: newQuantity }
+      });
     }
-    // 商品が格納されていない場合
-    const product = await Product.findByPk(prodId);
-    fetchedCart.addProduct(product, {
-      through: { quantity: newQuantity }
-    });
     res.status(200).json({
       success: true
     });
