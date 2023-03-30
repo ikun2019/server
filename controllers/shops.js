@@ -55,7 +55,7 @@ exports.getProduct = async (req, res, next) => {
 }
 
 // * cartページの取得 => /cart
-// UI表示
+// UI表示 => GET
 exports.getCart = async (req, res, next) => {
   const cart = await req.user.getCart();
   const products = cart.getProducts();
@@ -64,6 +64,40 @@ exports.getCart = async (req, res, next) => {
     pageTitle: 'Your Cart',
     products: products
   });
+};
+
+// * cart追加 => /cart/:productId
+// 機能 => POST
+exports.postCart = async (req, res, next) => {
+  const prodId = req.params.productId;
+  let fetchedCart;
+  try {
+    const cart = await req.user.getCart();
+    fetchedCart = cart;
+    const cartProducts = await cart.getProducts({ where: { id: prodId } });
+    // 既にcartに商品が追加されている場合
+    let cartProduct;
+    if (cartProducts.length > 0) {
+      cartProduct = cartProducts[0];
+    }
+    let newQuantity = 1;
+    if (cartProduct) {
+      // TODO:
+    }
+    // 商品が格納されていない場合
+    const product = await Product.findByPk(prodId);
+    fetchedCart.addProduct(product, {
+      through: { quantity: newQuantity }
+    });
+    res.status(200).json({
+      success: true
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
 };
 
 // * checkoutページの取得 => /checkout

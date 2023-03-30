@@ -17,6 +17,10 @@ router.get('/products/:productId', shopsController.getProduct);
 // UI表示 => GET
 router.get('/cart', shopsController.getCart);
 
+// * cart追加 => /cart/:productId
+// 機能 => POST
+router.post('/cart/:productId', shopsController.postCart);
+
 // * cartページの取得 => /checkout
 // UI表示 => GET
 router.get('/checkout', shopsController.getCheckout);
