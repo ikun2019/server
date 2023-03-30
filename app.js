@@ -8,6 +8,8 @@ const sequelize = require('./config/database');
 // * モデルの読み込み
 const Product = require('./models/Product');
 const User = require('./models/User');
+const Cart = require('./models/Cart');
+const CartItem = require('./models/CartItem');
 
 // * routerの読み込み
 const adminRouter = require('./routes/admin');
@@ -42,6 +44,11 @@ app.use(errorsController.get404);
 // * アソシエーション
 User.hasMany(Product);
 Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
+User.hasOne(Cart);
+Cart.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
+Cart.belongsToMany(Product, { through: CartItem });
+Product.belongsToMany(Cart, { through: CartItem });
+
 
 // * サーバーの起動
 sequelize
