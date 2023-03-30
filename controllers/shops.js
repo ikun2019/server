@@ -56,10 +56,13 @@ exports.getProduct = async (req, res, next) => {
 
 // * cartページの取得 => /cart
 // UI表示
-exports.getCart = (req, res, next) => {
+exports.getCart = async (req, res, next) => {
+  const cart = await req.user.getCart();
+  const products = cart.getProducts();
   res.json({
     success: true,
-    pageTitle: 'Your Cart'
+    pageTitle: 'Your Cart',
+    products: products
   });
 };
 

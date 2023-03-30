@@ -63,6 +63,11 @@ sequelize
     }
     return user;
   })
+  .then(user => {
+    if (!user.cart) {
+      return user.createCart();
+    }
+  })
   .then(result => {
     app.listen(process.env.PORT, () => {
       console.log('サーバー起動'.bgGreen);
