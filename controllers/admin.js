@@ -36,11 +36,20 @@ exports.postAddProduct = async (req, res, next) => {
 
 // * 商品一覧表示 => /admin/products
 // UI表示 GET
-exports.getProducts = (req, res, next) => {
-  res.json({
-    success: true,
-    pageTitle: '商品一覧ページ'
-  });
+exports.getProducts = async (req, res, next) => {
+  try {
+    const products = await req.user.getProducts;
+    res.json({
+      success: true,
+      pageTitle: '商品一覧ページ',
+      products: products
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
 };
 
 // * 商品編集=> /admin/products/:productId
@@ -48,10 +57,10 @@ exports.getProducts = (req, res, next) => {
 exports.getEditProduct = async (req, res, next) => {
   const prodId = req.params.productId;
   try {
-    const product = await Product.findOne({ where: { id: prodId } });
+    const products = await req.user.getProducts({ where: { id: prodId } });
     res.status(200).json({
       success: true,
-      product: product
+      product: products[0]
     });
   } catch (err) {
     res.status(500).json({
