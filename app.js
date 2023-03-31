@@ -10,6 +10,8 @@ const Product = require('./models/Product');
 const User = require('./models/User');
 const Cart = require('./models/Cart');
 const CartItem = require('./models/CartItem');
+const Order = require('./models/Order');
+const OrderItem = require('./models/CartItem');
 
 // * routerの読み込み
 const adminRouter = require('./routes/admin');
@@ -48,7 +50,10 @@ User.hasOne(Cart);
 Cart.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 Cart.belongsToMany(Product, { through: CartItem });
 Product.belongsToMany(Cart, { through: CartItem });
-
+Order.belongsTo(User);
+User.hasMany(Order);
+Order.belongsToMany(Product, { through: OrderItem });
+Product.belongsToMany(Order, { through: OrderItem });
 
 // * サーバーの起動
 sequelize
