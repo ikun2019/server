@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const Cart = require('../models/Cart');
 
 // * トップ => /products
 // UI表示 => GET
@@ -112,4 +113,25 @@ exports.getCheckout = (req, res, next) => {
     success: true,
     pageTitle: 'Checkout'
   });
+};
+
+// * cart削除機能 => /cart
+// 機能 => DELETE
+exports.postCartDeleteProduct = async (req, res, next) => {
+  const prodId = req.body.productId;
+  try {
+    const cart = await req.user.getCart();
+    const deleteProducts = await cart.getProducts({ where: { id: prodId } });
+    const deleteProduct = deleteProducts[0];
+    await deleteProduct.cartItem.destroy();
+    res.status(200).json({
+      success: true,
+      message: 'Deleted Product'
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
 };

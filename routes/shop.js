@@ -25,4 +25,8 @@ router.post('/cart/:productId', shopsController.postCart);
 // UI表示 => GET
 router.get('/checkout', shopsController.getCheckout);
 
+// * cart削除機能 => /cart
+// 機能 => DELETE
+router.delete('/cart', shopsController.postCartDeleteProduct);
+
 module.exports = router;
