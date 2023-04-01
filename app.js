@@ -57,8 +57,8 @@ Product.belongsToMany(Order, { through: OrderItem });
 
 // * サーバーの起動
 sequelize
-  .sync({ alter: true })
-  // .sync({ force: true })
+  // .sync({ alter: true })
+  .sync({ force: true })
   .then(result => {
     return User.findByPk(1);
   })

@@ -1,5 +1,6 @@
 const Product = require('../models/Product');
 const Cart = require('../models/Cart');
+const Order = require('../models/Order');
 
 // * トップ => /products
 // UI表示 => GET
@@ -127,6 +128,31 @@ exports.postCartDeleteProduct = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Deleted Product'
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+// * order機能 => /create-order
+// 機能 => POST
+exports.postOrder = async (req, res, next) => {
+  let fetchedCart;
+  try {
+    const cart = await req.user.getCart();
+    fetchedCart = cart;
+    const products = await fetchedCart.getProducts();
+    const order = await req.user.createOrder();
+    await order.addProducts(products.map(product => {
+      product.orderItem = { quantity: product.cartItem.quantity };
+    }));
+    await fetchedCart.setProducts(null);
+    res.status(200).json({
+      success: true,
+      message: 'Ordered'
     });
   } catch (err) {
     res.status(500).json({
