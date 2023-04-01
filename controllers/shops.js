@@ -44,7 +44,7 @@ exports.getProduct = async (req, res, next) => {
   const prodId = req.params.productId;
   try {
     const product = await Product.findOne({ where: { id: prodId } });
-    res.status(500).json({
+    res.status(200).json({
       success: true,
       product: product
     });
@@ -68,7 +68,7 @@ exports.getCart = async (req, res, next) => {
   });
 };
 
-// * cart追加 => /cart/:productId
+// * cart追加 => /api/cart
 // 機能 => POST
 exports.postCart = async (req, res, next) => {
   const prodId = req.body.productId;

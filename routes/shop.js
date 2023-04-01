@@ -5,11 +5,11 @@ const shopsController = require('../controllers/shops');
 // UI表示 => GET
 router.get('/', shopsController.getIndex);
 
-// * 商品一覧 => /products
+// * 商品一覧 => /api/products
 // UI表示 => GET
 router.get('/products', shopsController.getProducts);
 
-// * 単一商品 => /products/:productId
+// * 単一商品 => /api/products/:productId
 // UI表示 => GET
 router.get('/products/:productId', shopsController.getProduct);
 
@@ -17,7 +17,7 @@ router.get('/products/:productId', shopsController.getProduct);
 // UI表示 => GET
 router.get('/cart', shopsController.getCart);
 
-// * cart追加 => /cart
+// * cart追加 => /api/cart
 // 機能 => POST
 router.post('/cart', shopsController.postCart);
 
