@@ -30,6 +30,7 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
 });
 
 // * ユーザーのミドルウェア
@@ -43,8 +44,8 @@ app.use(async (req, res, next) => {
 });
 
 // * routerのマウント
-app.use('/admin', adminRouter);
-app.use('/', shopRouter);
+app.use('/api/admin', adminRouter);
+app.use('/api', shopRouter);
 // 404エラー
 app.use(errorsController.get404);
 
@@ -62,8 +63,8 @@ Product.belongsToMany(Order, { through: OrderItem });
 
 // * サーバーの起動
 sequelize
-  // .sync({ alter: true })
-  .sync({ force: true })
+  .sync({ alter: true })
+  // .sync({ force: true })
   .then(result => {
     return User.findByPk(1);
   })
