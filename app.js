@@ -16,6 +16,7 @@ const OrderItem = require('./models/CartItem');
 // * routerの読み込み
 const adminRouter = require('./routes/admin');
 const shopRouter = require('./routes/shop');
+const authRouter = require('./routes/auth');
 
 // * controllerの読み込み
 const errorsController = require('./controllers/errors');
@@ -46,6 +47,7 @@ app.use(async (req, res, next) => {
 // * routerのマウント
 app.use('/api/admin', adminRouter);
 app.use('/api', shopRouter);
+app.use('/api', authRouter);
 // 404エラー
 app.use(errorsController.get404);
 

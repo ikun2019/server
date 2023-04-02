@@ -28,7 +28,8 @@ exports.getIndex = async (req, res, next) => {
     res.status(200).json({
       success: true,
       pageTitle: '商品一覧',
-      products: products
+      products: products,
+      isAuthenticated: req.isLoggedIn
     });
   } catch (err) {
     res.status(500).json({
@@ -64,7 +65,8 @@ exports.getCart = async (req, res, next) => {
   res.json({
     success: true,
     pageTitle: 'Your Cart',
-    products: products
+    products: products,
+    isAuthenticated: req.isLoggedIn
   });
 };
 
@@ -170,7 +172,8 @@ exports.getOrders = async (req, res, next) => {
     const orders = await req.user.getOrders({ include: ['products'] });
     res.status(200).json({
       success: true,
-      orders: orders
+      orders: orders,
+      isAuthenticated: req.isLoggedIn
     });
   } catch (err) {
     console.log(err);

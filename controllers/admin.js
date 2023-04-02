@@ -42,7 +42,8 @@ exports.getProducts = async (req, res, next) => {
     res.json({
       success: true,
       pageTitle: '商品一覧ページ',
-      products: products
+      products: products,
+      isAuthenticated: req.isLoggedIn
     });
   } catch (err) {
     res.status(500).json({
