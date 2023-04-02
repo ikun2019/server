@@ -60,7 +60,7 @@ exports.getProduct = async (req, res, next) => {
 // UI表示 => GET
 exports.getCart = async (req, res, next) => {
   const cart = await req.user.getCart();
-  const products = cart.getProducts();
+  const products = await cart.getProducts();
   res.json({
     success: true,
     pageTitle: 'Your Cart',
@@ -116,10 +116,11 @@ exports.getCheckout = (req, res, next) => {
   });
 };
 
-// * cart削除機能 => /cart
+// * cart削除機能 => /api/cart
 // 機能 => DELETE
 exports.postCartDeleteProduct = async (req, res, next) => {
   const prodId = req.body.productId;
+  console.log(prodId);
   try {
     const cart = await req.user.getCart();
     const deleteProducts = await cart.getProducts({ where: { id: prodId } });
