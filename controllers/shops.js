@@ -162,3 +162,17 @@ exports.postOrder = async (req, res, next) => {
     });
   }
 };
+
+// * ordersの取得 => /api/orders
+// UI表示
+exports.getOrders = async (req, res, next) => {
+  try {
+    const orders = await req.user.getOrders();
+    res.status(200).json({
+      success: true,
+      orders: orders
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};

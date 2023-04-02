@@ -33,4 +33,8 @@ router.delete('/cart', shopsController.postCartDeleteProduct);
 // 機能 => POST
 router.post('/create-order', shopsController.postOrder);
 
+// * ordersの取得 => /api/orders
+// UI表示
+router.get('/orders', shopsController.getOrders);
+
 module.exports = router;
