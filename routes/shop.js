@@ -29,7 +29,7 @@ router.get('/checkout', shopsController.getCheckout);
 // 機能 => DELETE
 router.delete('/cart', shopsController.postCartDeleteProduct);
 
-// * order機能 => /create-order
+// * order機能 => /api/create-order
 // 機能 => POST
 router.post('/create-order', shopsController.postOrder);
 

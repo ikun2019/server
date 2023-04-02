@@ -138,7 +138,7 @@ exports.postCartDeleteProduct = async (req, res, next) => {
   }
 };
 
-// * order機能 => /create-order
+// * order機能 => /api/create-order
 // 機能 => POST
 exports.postOrder = async (req, res, next) => {
   let fetchedCart;
@@ -167,7 +167,7 @@ exports.postOrder = async (req, res, next) => {
 // UI表示
 exports.getOrders = async (req, res, next) => {
   try {
-    const orders = await req.user.getOrders();
+    const orders = await req.user.getOrders({ include: ['products'] });
     res.status(200).json({
       success: true,
       orders: orders
