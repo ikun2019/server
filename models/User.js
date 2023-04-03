@@ -38,4 +38,9 @@ User.beforeCreate(async (user) => {
   user.password = await bcrypt.hash(user.password, salt);
 });
 
+// ログイン時のパスワード一致確認
+User.prototype.comparePassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
 module.exports = User;
