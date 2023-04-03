@@ -1,3 +1,5 @@
+const User = require('../models/User');
+
 // * ログインページ => /api/login
 // UI表示
 exports.getLogin = async (req, res, next) => {
@@ -32,6 +34,29 @@ exports.postLogin = async (req, res, next) => {
     }
     const token = foundUser.getSignedJwtToken();
     req.isLoggedIn = true;
+    res.status(200).json({
+      success: true,
+      token
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+// * サインアップページ => /api/signup
+// 機能
+exports.postSignup = async (req, res, next) => {
+  try {
+    const user = await new User();
+    user.name = req.body.name;
+    user.email = req.body.email;
+    user.password = req.body.password;
+    await user.save();
+
+    const token = user.getSignedJwtToken();
     res.status(200).json({
       success: true,
       token

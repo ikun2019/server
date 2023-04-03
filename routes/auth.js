@@ -7,4 +7,8 @@ router.get('/login', authController.getLogin);
 // 機能
 router.post('/login', authController.postLogin);
 
+// * サインアップページ => /api/signup
+// 機能
+router.post('/signup', authController.postSignup);
+
 module.exports = router;
