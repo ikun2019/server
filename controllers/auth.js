@@ -1,3 +1,5 @@
+// * ログインページ => /api/login
+// UI表示
 exports.getLogin = async (req, res, next) => {
   try {
     res.status(200).json({
@@ -11,7 +13,7 @@ exports.getLogin = async (req, res, next) => {
     });
   }
 };
-
+// 機能
 exports.postLogin = async (req, res, next) => {
   try {
     const email = req.body.email;
