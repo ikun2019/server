@@ -22,6 +22,14 @@ const User = sequelize.define('user', {
     type: DataTypes.STRING,
     allowNull: false
   }
+}, {
+  hooks: {
+    beforeCreate: async (user) => {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(user.password, salt);
+      user.password = hashedPassword;
+    }
+  }
 });
 
 // JWT署名
@@ -32,11 +40,6 @@ User.prototype.getSignedJwtToken = function () {
     { expiresIn: process.env.JWT_EXPIRE }
   );
 };
-// パスワードのハッシュ化
-User.beforeCreate(async (user) => {
-  const salt = await bcrypt.getSalt(10);
-  user.password = await bcrypt.hash(user.password, salt);
-});
 
 // ログイン時のパスワード一致確認
 User.prototype.comparePassword = async function (enteredPassword) {

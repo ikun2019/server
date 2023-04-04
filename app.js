@@ -65,22 +65,8 @@ Product.belongsToMany(Order, { through: OrderItem });
 
 // * サーバーの起動
 sequelize
-  .sync({ alter: true })
-  // .sync({ force: true })
-  .then(result => {
-    return User.findByPk(1);
-  })
-  .then(user => {
-    if (!user) {
-      return User.create({ name: 'max', email: 'dummy@test.com' });
-    }
-    return user;
-  })
-  .then(user => {
-    if (!user.cart) {
-      return user.createCart();
-    }
-  })
+  // .sync({ alter: true })
+  .sync({ force: true })
   .then(result => {
     app.listen(process.env.PORT, () => {
       console.log('サーバー起動'.bgGreen);
