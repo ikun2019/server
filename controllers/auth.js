@@ -33,7 +33,6 @@ exports.postLogin = async (req, res, next) => {
       });
     }
     const token = foundUser.getSignedJwtToken();
-    req.isLoggedIn = true;
     res.status(200).json({
       success: true,
       token
@@ -54,13 +53,10 @@ exports.postSignup = async (req, res, next) => {
     user.name = req.body.name;
     user.email = req.body.email;
     user.password = req.body.password;
-    console.log('user =>', req.body.name, req.body.email, req.body.password);
     await user.save();
 
-    console.log('user =>', user);
-
     const token = user.getSignedJwtToken();
-    console.log('token =>', token);
+
     res.status(200).json({
       success: true,
       token
@@ -72,3 +68,22 @@ exports.postSignup = async (req, res, next) => {
     });
   }
 };
+
+// * nuxt authのエンドポイント => /api/auth/user
+// UI表示
+exports.getUser = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ where: { id: req.user.id } });
+    if (user) {
+      res.status(200).json({
+        success: true,
+        user: user
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+}

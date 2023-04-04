@@ -47,7 +47,7 @@ app.use(async (req, res, next) => {
 // * routerのマウント
 app.use('/api/admin', adminRouter);
 app.use('/api', shopRouter);
-app.use('/api', authRouter);
+app.use('/api/auth', authRouter);
 // 404エラー
 app.use(errorsController.get404);
 
