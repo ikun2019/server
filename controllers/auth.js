@@ -20,14 +20,14 @@ exports.postLogin = async (req, res, next) => {
   try {
     const foundUser = await User.findOne({ where: { email: req.body.email } });
     if (!foundUser) {
-      return res.status(403).json({
+      return res.status(401).json({
         success: false,
         message: 'ユーザーが見つかりません'
       });
     }
     const isMatch = await foundUser.comparePassword(req.body.password);
     if (!isMatch) {
-      return res.status(403).json({
+      return res.status(401).json({
         success: false,
         message: 'パスワードが一致しません'
       });
