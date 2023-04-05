@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const shopsController = require('../controllers/shops');
+const verifyToken = require('../middlewares/verify-token');
 
 // * トップ => /index
 // UI表示 => GET
@@ -15,26 +16,26 @@ router.get('/products/:productId', shopsController.getProduct);
 
 // * cartページの取得 => /api/cart
 // UI表示 => GET
-router.get('/cart', shopsController.getCart);
+router.get('/cart', verifyToken, shopsController.getCart);
 
 // * cart追加 => /api/cart
 // 機能 => POST
-router.post('/cart', shopsController.postCart);
+router.post('/cart', verifyToken, shopsController.postCart);
 
 // * cartページの取得 => /checkout
 // UI表示 => GET
-router.get('/checkout', shopsController.getCheckout);
+router.get('/checkout', verifyToken, shopsController.getCheckout);
 
 // * cart削除機能 => /api/cart
 // 機能 => DELETE
-router.delete('/cart', shopsController.postCartDeleteProduct);
+router.delete('/cart', verifyToken, shopsController.postCartDeleteProduct);
 
 // * order機能 => /api/create-order
 // 機能 => POST
-router.post('/create-order', shopsController.postOrder);
+router.post('/create-order', verifyToken, shopsController.postOrder);
 
 // * ordersの取得 => /api/orders
 // UI表示
-router.get('/orders', shopsController.getOrders);
+router.get('/orders', verifyToken, shopsController.getOrders);
 
 module.exports = router;
