@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 const rootDir = require('./util/path');
 const sequelize = require('./config/database');
+const session = require('express-session');
 
 // * モデルの読み込み
 const Product = require('./models/Product');
@@ -33,6 +34,11 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
 });
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false
+}));
 
 // * ユーザーのミドルウェア
 app.use(async (req, res, next) => {
