@@ -33,6 +33,11 @@ exports.postLogin = async (req, res, next) => {
       });
     }
     const token = foundUser.getSignedJwtToken();
+    req.session.user = foundUser;
+    await req.session.save(err => {
+      console.log(err);
+    });
+
     res.status(200).json({
       success: true,
       token
