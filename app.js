@@ -5,6 +5,7 @@ dotenv.config();
 const rootDir = require('./util/path');
 const sequelize = require('./config/database');
 const session = require('express-session');
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
 // * モデルの読み込み
 const Product = require('./models/Product');
@@ -24,6 +25,9 @@ const errorsController = require('./controllers/errors');
 
 // * appの初期化
 const app = express();
+const store = new SequelizeStore({
+  db: sequelize
+});
 
 // * appの設定
 app.use(express.urlencoded({ extended: false }));
@@ -36,6 +40,7 @@ app.use((req, res, next) => {
 });
 app.use(session({
   secret: process.env.SESSION_SECRET,
+  store: store,
   resave: false,
   saveUninitialized: false
 }));
