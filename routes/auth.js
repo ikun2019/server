@@ -11,6 +11,10 @@ router.post('/login', authController.postLogin);
 // 機能
 router.post('/signup', authController.postSignup);
 
+// * ログアウト機能 => /api/auth/logout
+// 機能
+router.post('/logout', authController.postLogout);
+
 // * nuxt authのエンドポイント => /api/auth/user
 // UI表示
 router.get('/user', authController.getUser);

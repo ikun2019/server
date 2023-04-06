@@ -74,6 +74,22 @@ exports.postSignup = async (req, res, next) => {
   }
 };
 
+// * ログアウト機能 => /api/auth/logout
+// 機能
+exports.postLogout = async (req, res, next) => {
+  try {
+    await req.session.destroy();
+    res.status(200).json({
+      success: true
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
 // * nuxt authのエンドポイント => /api/auth/user
 // UI表示
 exports.getUser = async (req, res, next) => {
