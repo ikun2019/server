@@ -15,7 +15,7 @@ exports.postAddProduct = async (req, res, next) => {
   const price = req.body.price;
   const description = req.body.description;
   try {
-    const product = await req.user.createProduct({
+    const product = await req.session.user.createProduct({
       title,
       imageUrl,
       price,
@@ -38,7 +38,7 @@ exports.postAddProduct = async (req, res, next) => {
 // UI表示 GET
 exports.getProducts = async (req, res, next) => {
   try {
-    const products = await req.user.getProducts;
+    const products = await req.session.user.getProducts;
     res.json({
       success: true,
       pageTitle: '商品一覧ページ',
@@ -58,7 +58,7 @@ exports.getProducts = async (req, res, next) => {
 exports.getEditProduct = async (req, res, next) => {
   const prodId = req.params.productId;
   try {
-    const products = await req.user.getProducts({ where: { id: prodId } });
+    const products = await req.session.user.getProducts({ where: { id: prodId } });
     res.status(200).json({
       success: true,
       product: products[0]
