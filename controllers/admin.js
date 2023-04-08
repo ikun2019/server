@@ -1,6 +1,6 @@
 const Product = require('../models/Product');
 
-// * 商品追加ページ => /admin/add-product
+// * 商品追加ページ => /api/admin/add-product
 // UI表示 => GET
 exports.getAddProduct = (req, res, next) => {
   res.send({
@@ -34,7 +34,7 @@ exports.postAddProduct = async (req, res, next) => {
   }
 };
 
-// * 商品一覧表示 => /admin/products
+// * 商品一覧表示 => /api/admin/products
 // UI表示 GET
 exports.getProducts = async (req, res, next) => {
   try {
@@ -53,7 +53,7 @@ exports.getProducts = async (req, res, next) => {
   }
 };
 
-// * 商品編集=> /admin/products/:productId
+// * 商品編集=> /api/admin/products/:productId
 // UI表示 => GET
 exports.getEditProduct = async (req, res, next) => {
   const prodId = req.params.productId;
@@ -96,7 +96,7 @@ exports.postEditProduct = async (req, res, next) => {
   }
 };
 
-// * 商品削除=> /admin/products/:productId
+// * 商品削除=> /api/admin/products/:productId
 // 機能 => DELETE
 exports.postDeleteProduct = async (req, res, next) => {
   const prodId = req.params.productId;
