@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const authController = require('../controllers/auth');
+const verifyToken = require('../middlewares/verify-token');
 
 // * ログインページ => /api/auth/login
 // UI表示
@@ -17,6 +18,6 @@ router.post('/logout', authController.postLogout);
 
 // * nuxt authのエンドポイント => /api/auth/user
 // UI表示
-router.get('/user', authController.getUser);
+router.get('/user', verifyToken, authController.getUser);
 
 module.exports = router;

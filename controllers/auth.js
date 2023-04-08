@@ -1,3 +1,4 @@
+const sequelize = require('../config/database');
 const User = require('../models/User');
 
 // * ログインページ => /api/login
@@ -33,10 +34,6 @@ exports.postLogin = async (req, res, next) => {
       });
     }
     const token = foundUser.getSignedJwtToken();
-    req.session.user = foundUser;
-    await req.session.save(err => {
-      console.log(err);
-    });
 
     res.status(200).json({
       success: true,
@@ -78,7 +75,14 @@ exports.postSignup = async (req, res, next) => {
 // 機能
 exports.postLogout = async (req, res, next) => {
   try {
-    await req.session.destroy();
+    const sessionId = req.sessionID;
+    await req.session.destroy(err => {
+      sequelize.models.Session.destroy({
+        where: {
+          sid: sessionId
+        }
+      });
+    });
     res.status(200).json({
       success: true
     });
@@ -94,11 +98,17 @@ exports.postLogout = async (req, res, next) => {
 // UI表示
 exports.getUser = async (req, res, next) => {
   try {
-    const user = await User.findOne({ where: { id: req.user.id } });
+    const user = await User.findOne({ where: { id: req.session.user.id } });
+    console.log('getUser =>', user);
     if (user) {
       res.status(200).json({
         success: true,
         user: user
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        user: null
       });
     }
   } catch (err) {

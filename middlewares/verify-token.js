@@ -11,8 +11,16 @@ module.exports = async function (req, res, next) {
       return next(new Error('tokenが見つかりません'));
     };
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.session.user = await User.findOne({ where: { id: decoded.id } });
-    next();
+    const user = await User.findOne({ where: { id: decoded.id } });
+    if (user) {
+      req.session.user = user;
+      next();
+    } else {
+      res.status(401).json({
+        success: false,
+        message: '認証情報が切れています'
+      });
+    }
   } catch (err) {
     res.status(500).json({
       success: false,

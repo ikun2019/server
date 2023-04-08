@@ -6,6 +6,7 @@ const rootDir = require('./util/path');
 const sequelize = require('./config/database');
 const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
+const cors = require('cors');
 
 // * モデルの読み込み
 const Product = require('./models/Product');
@@ -26,34 +27,26 @@ const errorsController = require('./controllers/errors');
 // * appの初期化
 const app = express();
 const store = new SequelizeStore({
-  db: sequelize
+  db: sequelize,
+  expires: 1800000
 });
 
 // * appの設定
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-});
+app.use(cors({
+  origin: 'http://localhost:8080',
+  optionsSuccessStatus: 200
+}));
 app.use(session({
   secret: process.env.SESSION_SECRET,
   store: store,
   resave: false,
-  saveUninitialized: false
-}));
-
-// * ユーザーのミドルウェア
-app.use(async (req, res, next) => {
-  try {
-    req.user = await User.findByPk(1);
-    next();
-  } catch (err) {
-    console.log(err);
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 60 * 60 * 1000
   }
-});
+}));
 
 // * routerのマウント
 app.use('/api/admin', adminRouter);
@@ -76,8 +69,8 @@ Product.belongsToMany(Order, { through: OrderItem });
 
 // * サーバーの起動
 sequelize
-  .sync({ alter: true })
-  // .sync({ force: true })
+  // .sync({ alter: true })
+  .sync({ force: true })
   .then(result => {
     app.listen(process.env.PORT, () => {
       console.log('サーバー起動'.bgGreen);
