@@ -35,6 +35,13 @@ exports.postLogin = async (req, res, next) => {
     }
     const token = foundUser.getSignedJwtToken();
 
+    req.session.user = foundUser;
+
+    const cart = await req.session.user.getCart();
+    if (!cart) {
+      await req.sesion.user.createCart();
+    }
+
     res.status(200).json({
       success: true,
       token
@@ -99,7 +106,6 @@ exports.postLogout = async (req, res, next) => {
 exports.getUser = async (req, res, next) => {
   try {
     const user = await User.findOne({ where: { id: req.session.user.id } });
-    console.log('getUser =>', user);
     if (user) {
       res.status(200).json({
         success: true,
