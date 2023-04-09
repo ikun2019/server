@@ -47,6 +47,22 @@ app.use(session({
     maxAge: 60 * 60 * 1000
   }
 }));
+// app.use(async (req, res, next) => {
+//   try {
+//     req.user = null;
+//     if (req.session.user) {
+//       const user = await User.findByPk(req.session.user.id);
+//       if (!user) {
+//         return next();
+//       }
+//       req.user = user;
+//       console.log('app.jsリクエストユーザー =>', req.user);
+//     }
+//     next();
+//   } catch (err) {
+//     console.log(err);
+//   }
+// });
 
 // * routerのマウント
 app.use('/api/admin', adminRouter);

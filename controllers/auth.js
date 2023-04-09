@@ -36,15 +36,14 @@ exports.postLogin = async (req, res, next) => {
     const token = foundUser.getSignedJwtToken();
 
     req.session.user = foundUser;
-
-    const cart = await req.session.user.getCart();
-    if (!cart) {
-      await req.sesion.user.createCart();
+    if (!await req.session.user.getCart()) {
+      await req.session.user.createCart();
     }
-
-    res.status(200).json({
-      success: true,
-      token
+    await req.session.save(err => {
+      res.status(200).json({
+        success: true,
+        token
+      });
     });
   } catch (err) {
     res.status(500).json({

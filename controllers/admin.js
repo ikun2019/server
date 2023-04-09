@@ -38,12 +38,10 @@ exports.postAddProduct = async (req, res, next) => {
 // UI表示 GET
 exports.getProducts = async (req, res, next) => {
   try {
-    const products = await req.session.user.getProducts;
+    const products = await req.user.getProducts();
     res.json({
       success: true,
-      pageTitle: '商品一覧ページ',
-      products: products,
-      isAuthenticated: req.isLoggedIn
+      products: products
     });
   } catch (err) {
     res.status(500).json({

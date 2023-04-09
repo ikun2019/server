@@ -19,6 +19,7 @@ module.exports = async function (req, res, next) {
       });
     }
     req.session.user = user;
+    req.user = user;
     next();
   } catch (err) {
     res.status(500).json({

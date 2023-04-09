@@ -74,7 +74,6 @@ exports.getCart = async (req, res, next) => {
 // 機能 => POST
 exports.postCart = async (req, res, next) => {
   const prodId = req.body.productId;
-  console.log('/api/cart productId =>', prodId);
   let fetchedCart;
   let newQuantity = 1;
   try {

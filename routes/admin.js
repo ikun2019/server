@@ -10,7 +10,7 @@ router.post('/add-product', verifyToken, adminController.postAddProduct);
 
 // * 商品一覧表示 => /api/admin/products
 // UI表示 GET
-router.get('/products', adminController.getProducts);
+router.get('/products', verifyToken, adminController.getProducts);
 
 // * 商品編集=> /api/admin/products/:productId
 // UI表示 => GET
