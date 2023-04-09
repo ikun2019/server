@@ -60,7 +60,7 @@ exports.getProduct = async (req, res, next) => {
 // * cartページの取得 => /cart
 // UI表示 => GET
 exports.getCart = async (req, res, next) => {
-  const cart = await req.user.getCart();
+  const cart = await req.session.user.getCart();
   const products = await cart.getProducts();
   res.json({
     success: true,
@@ -77,7 +77,7 @@ exports.postCart = async (req, res, next) => {
   let fetchedCart;
   let newQuantity = 1;
   try {
-    const cart = await req.user.getCart();
+    const cart = await req.session.user.getCart();
     fetchedCart = cart;
     const cartProducts = await cart.getProducts({ where: { id: prodId } });
     // 既にcartに商品が追加されている場合
@@ -124,7 +124,7 @@ exports.postCartDeleteProduct = async (req, res, next) => {
   const prodId = req.body.productId;
   console.log(prodId);
   try {
-    const cart = await req.user.getCart();
+    const cart = await req.session.user.getCart();
     const deleteProducts = await cart.getProducts({ where: { id: prodId } });
     const deleteProduct = deleteProducts[0];
     await deleteProduct.cartItem.destroy();
@@ -145,10 +145,10 @@ exports.postCartDeleteProduct = async (req, res, next) => {
 exports.postOrder = async (req, res, next) => {
   let fetchedCart;
   try {
-    const cart = await req.user.getCart();
+    const cart = await req.session.user.getCart();
     fetchedCart = cart;
     const products = await fetchedCart.getProducts();
-    const order = await req.user.createOrder();
+    const order = await req.session.user.createOrder();
     await order.addProducts(products.map(product => {
       product.orderItem = { quantity: product.cartItem.quantity };
     }));
@@ -169,7 +169,7 @@ exports.postOrder = async (req, res, next) => {
 // UI表示
 exports.getOrders = async (req, res, next) => {
   try {
-    const orders = await req.user.getOrders({ include: ['products'] });
+    const orders = await req.session.user.getOrders({ include: ['products'] });
     res.status(200).json({
       success: true,
       orders: orders,
