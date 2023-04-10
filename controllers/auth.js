@@ -151,9 +151,22 @@ exports.postReset = async (req, res, next) => {
       subject: 'Password Reset',
       html: `
         <h1>Password Reset</h1>
-        <p><a href="http://localhost:8080/auth/reset/${token}">Click</a></p>
+        <p><a href="http://localhost:8080/auth/${token}">Click</a></p>
       `
     });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+// * 新しいパスワードの設定画面 => /api/auth/new-password
+// 機能
+exports.postNewPassword = async (req, res, next) => {
+  try {
+
   } catch (err) {
     res.status(500).json({
       success: false,
