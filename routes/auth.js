@@ -20,4 +20,8 @@ router.post('/logout', authController.postLogout);
 // UI表示
 router.get('/user', verifyToken, authController.getUser);
 
+// *パスワードリセット機能 => /api/auth/reset
+// 機能
+router.post('/reset', authController.postReset);
+
 module.exports = router;

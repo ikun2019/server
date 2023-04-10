@@ -1,5 +1,6 @@
 const sequelize = require('../config/database');
 const User = require('../models/User');
+const crypt = require('crypto');
 
 // * ログインページ => /api/login
 // UI表示
@@ -122,4 +123,39 @@ exports.getUser = async (req, res, next) => {
       message: err.message
     });
   }
-}
+};
+
+// *パスワードリセット機能 => /api/auth/reset
+// 機能
+exports.postReset = async (req, res, next) => {
+  try {
+    let token;
+    const user = await User.findOne({ where: { email: req.body.email } });
+    if (!user) {
+      return res.redirect('/reset');
+    };
+    crypt.randomBytes(32, (err, buffer) => {
+      if (err) {
+        return res.redirect('/reset');
+      }
+      token = buffer.toString('hex');
+    });
+    user.resetToken = token;
+    user.resetTokenExpiration = Date.now() + 3600000;
+    await user.save();
+    res.redirect('/');
+    await sendEmail({
+      email: req.body.email,
+      subject: 'Password Reset',
+      message: `
+        <h1>Password Reset</h1>
+        <p><a href="http://localhost:8080/auth/reset/${token}">Click</a></p>
+      `
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};

@@ -22,7 +22,9 @@ const User = sequelize.define('user', {
   password: {
     type: DataTypes.STRING,
     allowNull: false
-  }
+  },
+  resetToken: DataTypes.STRING,
+  resetTokenExpiration: DataTypes.STRING
 }, {
   hooks: {
     beforeCreate: async (user) => {
