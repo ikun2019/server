@@ -1,6 +1,7 @@
 const sequelize = require('../config/database');
 const User = require('../models/User');
 const crypt = require('crypto');
+const transporter = require('../util/mailer');
 
 // * ログインページ => /api/login
 // UI表示
@@ -144,10 +145,11 @@ exports.postReset = async (req, res, next) => {
     user.resetTokenExpiration = Date.now() + 3600000;
     await user.save();
     res.redirect('/');
-    await sendEmail({
-      email: req.body.email,
+    return await transporter.sendMail({
+      to: req.body.email,
+      from: 'shop@node.jp',
       subject: 'Password Reset',
-      message: `
+      html: `
         <h1>Password Reset</h1>
         <p><a href="http://localhost:8080/auth/reset/${token}">Click</a></p>
       `
