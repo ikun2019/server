@@ -1,7 +1,8 @@
 const sequelize = require('../config/database');
 const User = require('../models/User');
-const crypt = require('crypto');
+const crypto = require('crypto');
 const transporter = require('../util/mailer');
+const { Op } = require('sequelize');
 
 // * ログインページ => /api/login
 // UI表示
@@ -130,16 +131,18 @@ exports.getUser = async (req, res, next) => {
 // 機能
 exports.postReset = async (req, res, next) => {
   try {
-    let token;
     const user = await User.findOne({ where: { email: req.body.email } });
     if (!user) {
       return res.redirect('/reset');
     };
-    crypt.randomBytes(32, (err, buffer) => {
-      if (err) {
-        return res.redirect('/reset');
-      }
-      token = buffer.toString('hex');
+    const token = await new Promise((resolve, reject) => {
+      crypto.randomBytes(32, (err, buffer) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(buffer.toString('hex'));
+        }
+      });
     });
     user.resetToken = token;
     user.resetTokenExpiration = Date.now() + 3600000;
@@ -162,11 +165,48 @@ exports.postReset = async (req, res, next) => {
   }
 };
 
-// * 新しいパスワードの設定画面 => /api/auth/new-password
+// * 新しいパスワードの設定画面 => /api/auth/new-password/:token
+// UI表示
+exports.getNewPassword = async (req, res, next) => {
+  try {
+    const resetToken = req.params.token;
+    const user = await User.findOne({
+      where: {
+        resetToken: resetToken,
+        resetTokenExpiration: { [Op.gt]: Date.now() }
+      }
+    });
+    res.status(200).json({
+      success: true,
+      resetToken: resetToken,
+      userId: user.id
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
 // 機能
 exports.postNewPassword = async (req, res, next) => {
   try {
-
+    let resetUser;
+    const newPassword = req.body.password;
+    const userId = req.body.userId;
+    const passwordToken = req.body.resetToken;
+    const user = await User.findOne({
+      where: {
+        resetToken: passwordToken,
+        resetTokenExpiration: { [Op.gt]: Date.now() },
+        id: userId
+      }
+    });
+    resetUser = user;
+    resetUser.password = newPassword;
+    resetUser.resetToken = undefined;
+    resetUser.resetTokenExpiration = undefined;
+    await resetUser.save();
+    res.status(200).json({
+      success: true
+    });
   } catch (err) {
     res.status(500).json({
       success: false,

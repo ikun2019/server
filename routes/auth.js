@@ -25,6 +25,8 @@ router.get('/user', verifyToken, authController.getUser);
 router.post('/reset', authController.postReset);
 
 // * 新しいパスワードの設定画面 => /api/auth/new-password
+// UI表示
+router.get('/new-password/:token', authController.getNewPassword);
 // 機能
 router.post('/new-password', authController.postNewPassword);
 
