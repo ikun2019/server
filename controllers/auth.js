@@ -23,6 +23,12 @@ exports.getLogin = async (req, res, next) => {
 // 機能
 exports.postLogin = async (req, res, next) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({
+        errorMessage: errors.array()[0].msg
+      });
+    }
     const foundUser = await User.findOne({ where: { email: req.body.email } });
     if (!foundUser) {
       return res.status(401).json({
