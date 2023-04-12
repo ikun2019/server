@@ -3,6 +3,7 @@ const User = require('../models/User');
 const crypto = require('crypto');
 const transporter = require('../util/mailer');
 const { Op } = require('sequelize');
+const { validationResult } = require('express-validator/check');
 
 // * ログインページ => /api/login
 // UI表示
@@ -60,6 +61,14 @@ exports.postLogin = async (req, res, next) => {
 // 機能
 exports.postSignup = async (req, res, next) => {
   try {
+    const errors = validationResult(req);
+    console.log(errors);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({
+        success: false,
+        errorMessage: errors.array()[0].msg
+      });
+    }
     const user = await new User();
     user.name = req.body.name;
     user.email = req.body.email;

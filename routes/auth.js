@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const authController = require('../controllers/auth');
 const verifyToken = require('../middlewares/verify-token');
+const { check } = require('express-validator');
 
 // * ログインページ => /api/auth/login
 // UI表示
@@ -10,7 +11,7 @@ router.post('/login', authController.postLogin);
 
 // * サインアップページ => /api/auth/signup
 // 機能
-router.post('/signup', authController.postSignup);
+router.post('/signup', check('email').isEmail().withMessage('emailが不正です'), authController.postSignup);
 
 // * ログアウト機能 => /api/auth/logout
 // 機能
