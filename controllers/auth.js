@@ -26,14 +26,24 @@ exports.postLogin = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({
-        errorMessage: errors.array()[0].msg
+        errorMessage: errors.array()[0].msg,
+        oldInput: {
+          email: email,
+          password: password
+        },
+        validationErrors: errors.array()
       });
     }
     const foundUser = await User.findOne({ where: { email: req.body.email } });
     if (!foundUser) {
       return res.status(401).json({
         success: false,
-        message: 'ユーザーが見つかりません'
+        errorMessage: 'ユーザーが見つかりません',
+        oldInput: {
+          email: email,
+          password: password
+        },
+        validationErrors: []
       });
     }
     const isMatch = await foundUser.comparePassword(req.body.password);
