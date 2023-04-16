@@ -5,6 +5,8 @@ const Product = require('../models/Product');
 const Cart = require('../models/Cart');
 const Order = require('../models/Order');
 
+const ITEMS_PER_PAGE = 2;
+
 // * トップ => /products
 // UI表示 => GET
 exports.getProducts = async (req, res, next) => {
@@ -27,12 +29,23 @@ exports.getProducts = async (req, res, next) => {
 // UI表示 => GET
 exports.getIndex = async (req, res, next) => {
   try {
-    const products = await Product.findAll();
+    const page = req.query.page || 1;
+    const { count, rows: products } = await Product.findAndCountAll({
+      limit: ITEMS_PER_PAGE,
+      offset: ITEMS_PER_PAGE * (page - 1)
+    });
+    const pageCount = Math.ceil(count / ITEMS_PER_PAGE);
+
     res.status(200).json({
       success: true,
       pageTitle: '商品一覧',
       products: products,
-      isAuthenticated: req.isLoggedIn
+      currentPage: page,
+      hasNextPage: ITEMS_PER_PAGE * page < count,
+      hasPreviosPage: page > 1,
+      nextPage: parseInt(page) + 1,
+      previosPage: parseInt(page) - 1,
+      pageCount: pageCount
     });
   } catch (err) {
     res.status(500).json({

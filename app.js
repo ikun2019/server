@@ -59,7 +59,8 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(express.json());
 app.use(cors({
   origin: 'http://localhost:8080',
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  credentials: true
 }));
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -92,8 +93,9 @@ Product.belongsToMany(Order, { through: OrderItem });
 
 // * サーバーの起動
 sequelize
-  .sync({ alter: true })
+  // .sync({ alter: true })
   // .sync({ force: true })
+  .sync()
   .then(result => {
     app.listen(process.env.PORT, () => {
       console.log('サーバー起動'.bgGreen);
