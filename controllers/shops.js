@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+const PDFDocument = require('pdfkit');
 const Product = require('../models/Product');
 const Cart = require('../models/Cart');
 const Order = require('../models/Order');
@@ -146,6 +149,7 @@ exports.postOrder = async (req, res, next) => {
   let fetchedCart;
   try {
     const cart = await req.session.user.getCart();
+    console.log(cart);
     fetchedCart = cart;
     const products = await fetchedCart.getProducts();
     const order = await req.session.user.createOrder();
@@ -172,9 +176,53 @@ exports.getOrders = async (req, res, next) => {
     const orders = await req.session.user.getOrders({ include: ['products'] });
     res.status(200).json({
       success: true,
-      orders: orders,
-      isAuthenticated: req.isLoggedIn
+      orders: orders
     });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// * 請求書の表示 => /api/orders/:orderId
+exports.getInvoice = async (req, res, next) => {
+  try {
+    const orderId = req.params.orderId;
+    // 注文したユーザーだけが見れるようにする
+    const order = await Order.findByPk(orderId, {
+      include: [{ model: Product }]
+    });
+    console.log('order =>', order);
+    if (!order) {
+      return next(new Error('注文がありません'));
+    }
+    // if (order.userId !== req.session.user.id) {
+    //   return next(new Error('認証されていません'));
+    // }
+
+    const invoiceName = 'invoice-' + orderId + '.pdf'
+    const invoicePath = path.join('data', 'invoices', invoiceName);
+
+    const pdfDoc = new PDFDocument();
+    pdfDoc.pipe(fs.createWriteStream(invoicePath));
+
+    // PDFの中身
+    pdfDoc.fontSize(26).text('Invoice', {
+      underline: true
+    });
+    pdfDoc.text('------------------------------');
+    let totalPrice = 0;
+    order.products.forEach(prod => {
+      totalPrice = totalPrice + prod.orderItem.quantity * prod.price;
+      pdfDoc.fontSize(14).text(prod.title + '-' + prod.orderItem.quantity + ' x ' + '$' + prod.price);
+    });
+    pdfDoc.text('------------------------------');
+    pdfDoc.fontSize(20).text('Total Price: $' + totalPrice);
+
+    pdfDoc.end();
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
+    pdfDoc.pipe(res);
   } catch (err) {
     console.log(err);
   }

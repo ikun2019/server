@@ -38,4 +38,7 @@ router.post('/create-order', verifyToken, shopsController.postOrder);
 // UI表示
 router.get('/orders', verifyToken, shopsController.getOrders);
 
+// * 請求書の表示 => /api/orders/:orderId
+router.get('/orders/:orderId', shopsController.getInvoice);
+
 module.exports = router;

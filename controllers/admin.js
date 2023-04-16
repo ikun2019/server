@@ -86,13 +86,13 @@ exports.postEditProduct = async (req, res, next) => {
   const prodId = req.params.productId;
   const updatedTitle = req.body.title;
   const updatedPrice = req.body.price;
-  const updatedImageUrl = req.body.imageUrl;
+  // const updatedImageUrl = req.body.imageUrl;
   const updatedDescription = req.body.description;
   try {
     const product = await Product.findOne({ where: { id: prodId } });
     product.title = updatedTitle;
     product.price = updatedPrice;
-    product.imageUrl = updatedImageUrl;
+    // product.imageUrl = updatedImageUrl;
     product.description = updatedDescription;
     await product.save();
     res.status(200).json({
