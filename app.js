@@ -8,6 +8,7 @@ const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const cors = require('cors');
 const multer = require('multer');
+const path = require('path');
 
 // * モデルの読み込み
 const Product = require('./models/Product');
@@ -54,6 +55,7 @@ const fileFilter = (req, file, cb) => {
 // * appの設定
 app.use(express.urlencoded({ extended: false }));
 app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(express.json());
 app.use(cors({
   origin: 'http://localhost:8080',
