@@ -7,6 +7,7 @@ const sequelize = require('./config/database');
 const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const cors = require('cors');
+const multer = require('multer');
 
 // * モデルの読み込み
 const Product = require('./models/Product');
@@ -31,8 +32,28 @@ const store = new SequelizeStore({
   expires: 1800000
 });
 
+// * multerの初期設定
+// 保存先とファイル名の設定
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'images');
+  },
+  filename: (req, file, cb) => {
+    cb(null, new Date().toISOString() + '-' + file.originalname);
+  }
+});
+// ファイルフィルターの導入
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'jpeg') {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
 // * appの設定
 app.use(express.urlencoded({ extended: false }));
+app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'));
 app.use(express.json());
 app.use(cors({
   origin: 'http://localhost:8080',

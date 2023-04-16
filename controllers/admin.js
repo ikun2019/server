@@ -10,11 +10,24 @@ exports.getAddProduct = (req, res, next) => {
 };
 // 機能 => POST
 exports.postAddProduct = async (req, res, next) => {
-  const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
-  const price = req.body.price;
-  const description = req.body.description;
   try {
+    console.log('req =>', req.file);
+    const title = req.body.title;
+    const image = req.file;
+    const imageUrl = req.file.filename;
+    const price = req.body.price;
+    const description = req.body.description;
+    console.log(image);
+    if (!image) {
+      return res.status(422).json({
+        product: {
+          title: title,
+          price: price,
+          description: description
+        },
+        errorMessage: '画像が添付されていません'
+      });
+    }
     const product = await req.session.user.createProduct({
       title,
       imageUrl,
