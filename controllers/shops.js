@@ -4,6 +4,7 @@ const PDFDocument = require('pdfkit');
 const Product = require('../models/Product');
 const Cart = require('../models/Cart');
 const Order = require('../models/Order');
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
 
 const ITEMS_PER_PAGE = 2;
 
@@ -127,11 +128,83 @@ exports.postCart = async (req, res, next) => {
 
 // * checkoutページの取得 => /checkout
 // UI表示 => GET
-exports.getCheckout = (req, res, next) => {
-  res.json({
-    success: true,
-    pageTitle: 'Checkout'
-  });
+exports.getCheckout = async (req, res, next) => {
+  try {
+    const cart = await req.user.getCart();
+    const products = await cart.getProducts();
+    let total = 0;
+    products.forEach(product => {
+      total += product.price * product.cartItem.quantity;
+    });
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment',
+      line_items: products.map(product => {
+        return {
+          quantity: product.cartItem.quantity,
+          price_data: {
+            currency: 'usd',
+            unit_amount: product.price * 100,
+            product_data: {
+              name: product.title,
+              description: product.description
+            }
+          }
+        }
+      }),
+      success_url: 'http://localhost:8080/orders',
+      cancel_url: 'http://localhost:8080/checkout'
+    });
+
+    res.status(200).json({
+      success: true,
+      pageTitle: 'Checkout',
+      products: products,
+      totalSum: total,
+      sessionId: session.id
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+// * => /api/clear-cart
+exports.postClearCart = async (req, res, next) => {
+  try {
+    console.log('カートをクリアしているよ')
+    const cart = await req.user.getCart();
+    const products = await cart.getProducts();
+    const order = await req.user.createOrder();
+    await order.addProducts(products.map(product => {
+      product.orderItem = { quantity: product.cartItem.quantity };
+    }));
+    await cart.setProducts(null);
+    res.status(200).json({
+      success: true,
+      message: 'Ordered'
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+}
+
+// * Checkout Success GET => /api/checkout/success
+exports.getCheckoutSuccess = async (req, res, next) => {
+  try {
+    res.status(200).json({
+      success: true
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false
+    });
+  }
 };
 
 // * cart削除機能 => /api/cart
@@ -162,7 +235,6 @@ exports.postOrder = async (req, res, next) => {
   let fetchedCart;
   try {
     const cart = await req.session.user.getCart();
-    console.log(cart);
     fetchedCart = cart;
     const products = await fetchedCart.getProducts();
     const order = await req.session.user.createOrder();

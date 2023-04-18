@@ -22,9 +22,10 @@ router.get('/cart', verifyToken, shopsController.getCart);
 // 機能 => POST
 router.post('/cart', verifyToken, shopsController.postCart);
 
-// * cartページの取得 => /checkout
+// * cartページの取得 => /api/checkout
 // UI表示 => GET
 router.get('/checkout', verifyToken, shopsController.getCheckout);
+router.post('/clear-cart', verifyToken, shopsController.postClearCart);
 
 // * cart削除機能 => /api/cart
 // 機能 => DELETE
@@ -32,7 +33,7 @@ router.delete('/cart', verifyToken, shopsController.postCartDeleteProduct);
 
 // * order機能 => /api/create-order
 // 機能 => POST
-router.post('/create-order', verifyToken, shopsController.postOrder);
+// router.post('/create-order', verifyToken, shopsController.postOrder);
 
 // * ordersの取得 => /api/orders
 // UI表示
