@@ -9,6 +9,9 @@ const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
+const { graphqlHTTP } = require('express-graphql');
+const graphqlSchema = require('./graphql/schema');
+const graphqlResolver = require('./graphql/resolvers');
 
 // * モデルの読み込み
 const Product = require('./models/Product');
@@ -19,9 +22,9 @@ const Order = require('./models/Order');
 const OrderItem = require('./models/CartItem');
 
 // * routerの読み込み
-const adminRouter = require('./routes/admin');
-const shopRouter = require('./routes/shop');
-const authRouter = require('./routes/auth');
+// const adminRouter = require('./routes/admin');
+// const shopRouter = require('./routes/shop');
+// const authRouter = require('./routes/auth');
 
 // * controllerの読み込み
 const errorsController = require('./controllers/errors');
@@ -71,11 +74,16 @@ app.use(session({
     maxAge: 60 * 60 * 1000
   }
 }));
+app.use('/graphql', graphqlHTTP({
+  schema: graphqlSchema,
+  rootValue: graphqlResolver,
+  graphiql: true,
+}));
 
 // * routerのマウント
-app.use('/api/admin', adminRouter);
-app.use('/api', shopRouter);
-app.use('/api/auth', authRouter);
+// app.use('/api/admin', adminRouter);
+// app.use('/api', shopRouter);
+// app.use('/api/auth', authRouter);
 // 404エラー
 app.use(errorsController.get404);
 
