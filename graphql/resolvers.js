@@ -35,5 +35,26 @@ module.exports = {
       id: createdUser.id,
       email: createdUser.email,
     }
+  },
+  login: async (args, req) => {
+    try {
+      const user = await User.findOne({
+        where: { email: args.email }
+      });
+      if (!user) {
+        throw new Error('ユーザーが存在しません');
+      }
+      const isMatch = await user.comparePassword(args.password);
+      if (!isMatch) {
+        throw new Error('パスワードが違います');
+      }
+      const token = await user.getSignedJwtToken();
+      return {
+        token,
+        user,
+      }
+    } catch (err) {
+      console.error(err);
+    }
   }
 }
