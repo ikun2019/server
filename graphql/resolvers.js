@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const User = require('../models/User');
+const Post = require('../models/Post');
 
 module.exports = {
   createUser: async function (args, req) {
@@ -56,5 +57,37 @@ module.exports = {
     } catch (err) {
       console.error(err);
     }
-  }
+  },
+  createPost: async (args, req) => {
+    try {
+      const errors = [];
+      if (validator.isEmpty(args.postInput.title || !validator.isLength(args.postInput.title, { min: 5 }))) {
+        errors.push({ message: 'タイトルがありません' });
+      }
+      if (validator.isEmpty(args.postInput.content || !validator.isLength(args.postInput.content, { min: 5 }))) {
+        errors.push({ message: 'コンテンツがありません' });
+      }
+      if (errors.length > 0) {
+        const error = new Error('Invalid input');
+        error.data = errors;
+        error.code = 422;
+        throw Error;
+      }
+      const post = new Post({
+        title: args.postInput.title,
+        content: args.postInput.content,
+        imageUrl: args.postInput.imageUrl,
+      });
+      const createPost = await post.save();
+      return {
+        ...createPost,
+        id: createPost.id,
+        title: createPost.title,
+        createdAt: createPost.createdAt,
+        updatedAt: createPost.updatedAt,
+      };
+    } catch (err) {
+      console.error(err);
+    }
+  },
 }

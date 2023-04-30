@@ -20,6 +20,7 @@ const Cart = require('./models/Cart');
 const CartItem = require('./models/CartItem');
 const Order = require('./models/Order');
 const OrderItem = require('./models/CartItem');
+const Post = require('./models/Post');
 
 // * routerの読み込み
 // const adminRouter = require('./routes/admin');
@@ -107,6 +108,8 @@ Order.belongsTo(User);
 User.hasMany(Order);
 Order.belongsToMany(Product, { through: OrderItem });
 Product.belongsToMany(Order, { through: OrderItem });
+User.hasMany(Post);
+Post.belongsTo(User);
 
 // * サーバーの起動
 sequelize
