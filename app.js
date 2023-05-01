@@ -9,6 +9,8 @@ const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
+const auth = require('./middlewares/auth');
+
 const { graphqlHTTP } = require('express-graphql');
 const graphqlSchema = require('./graphql/schema');
 const graphqlResolver = require('./graphql/resolvers');
@@ -75,6 +77,7 @@ app.use(session({
     maxAge: 60 * 60 * 1000
   }
 }));
+app.use(auth);
 app.use('/graphql', graphqlHTTP({
   schema: graphqlSchema,
   rootValue: graphqlResolver,
@@ -108,7 +111,7 @@ Order.belongsTo(User);
 User.hasMany(Order);
 Order.belongsToMany(Product, { through: OrderItem });
 Product.belongsToMany(Order, { through: OrderItem });
-User.hasMany(Post);
+User.hasMany(Post, { as: 'posts' });
 Post.belongsTo(User);
 
 // * サーバーの起動

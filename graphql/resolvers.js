@@ -31,10 +31,10 @@ module.exports = {
       password: hashedPassword,
     });
     const createdUser = await user.save();
+    const token = await createdUser.getSignedJwtToken();
     return {
-      // ...createdUser,
-      id: createdUser.id,
-      email: createdUser.email,
+      token: token,
+      user: createdUser,
     }
   },
   login: async (args, req) => {
@@ -61,6 +61,12 @@ module.exports = {
   createPost: async (args, req) => {
     try {
       const errors = [];
+      if (!req.isAuth) {
+        const error = new Error('認証されていません');
+        error.code = 401;
+        throw error;
+      }
+      console.log('req.isAuth =>', req.isAuth);
       if (validator.isEmpty(args.postInput.title || !validator.isLength(args.postInput.title, { min: 5 }))) {
         errors.push({ message: 'タイトルがありません' });
       }
@@ -71,23 +77,37 @@ module.exports = {
         const error = new Error('Invalid input');
         error.data = errors;
         error.code = 422;
-        throw Error;
+        throw error;
       }
-      const post = new Post({
+      const user = await User.findOne({
+        where: { id: req.userId }
+      });
+      console.log('user =>', user);
+      if (!user) {
+        const error = new Error('ユーザーがいません');
+        error.code = 401;
+        throw error;
+      }
+      const post = {
         title: args.postInput.title,
         content: args.postInput.content,
         imageUrl: args.postInput.imageUrl,
-      });
-      const createPost = await post.save();
+        creator: user,
+      };
+      const createPost = await user.createPost(post);
+      console.log('createPost =>', createPost.userId);
       return {
-        ...createPost,
         id: createPost.id,
         title: createPost.title,
-        createdAt: createPost.createdAt,
+        content: createPost.content,
+        imageUrl: createPost.imageUrl,
+        creator: user,
+        createdAt: createPost.userId,
         updatedAt: createPost.updatedAt,
       };
     } catch (err) {
       console.error(err);
+      throw err;
     }
   },
 }

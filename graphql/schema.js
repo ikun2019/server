@@ -10,7 +10,7 @@ module.exports = buildSchema(`
     title: String!
     content: String!
     imageUrl: String!
-    creator: User!
+    creator: User
     createdAt: String!
     updatedAt: String!
   }
@@ -37,7 +37,7 @@ module.exports = buildSchema(`
     hello: String!
   }
   type RootMutation {
-    createUser(userInput: UserInputData): User!
+    createUser(userInput: UserInputData): AuthData!
     login(email: String!, password: String!): AuthData!
     createPost(postInput: PostInputData): Post!
   }
