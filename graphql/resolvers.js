@@ -110,4 +110,32 @@ module.exports = {
       throw err;
     }
   },
+  posts: async (args, req) => {
+    if (!req.isAuth) {
+      const error = new Error('認証されていません');
+      error.code = 401;
+      throw error;
+    }
+    const response = await Post.findAndCountAll({
+      order: [
+        ['createdAt', 'DESC']
+      ],
+      include: [{ model: User }],
+    });
+    const totalPosts = response.count;
+    const posts = response.rows;
+
+    return {
+      // posts: posts.map(p => {
+      //   return {
+      //     ...p._doc,
+      //     id: p.id.toString(),
+      //     createdAt: p.createdAt.toISOString(),
+      //     updatedAt: p.updatedAt.toISOString(),
+      //   }
+      // }),
+      posts: posts,
+      totalPosts: totalPosts,
+    }
+  },
 }
