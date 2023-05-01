@@ -24,13 +24,14 @@ module.exports = {
     if (existingUser) {
       throw new Error('すでにユーザーが存在します');
     }
-    const hashedPassword = await bcrypt.hash(args.userInput.password, 12);
+    // const hashedPassword = await bcrypt.hash(args.userInput.password, 12);
     const user = new User({
       email: args.userInput.email,
       name: args.userInput.name,
-      password: hashedPassword,
+      password: args.userInput.password,
     });
     const createdUser = await user.save();
+    console.log(createdUser);
     const token = await createdUser.getSignedJwtToken();
     return {
       token: token,
