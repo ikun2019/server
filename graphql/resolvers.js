@@ -113,13 +113,18 @@ module.exports = {
   },
   getPosts: async (args, req) => {
     try {
-      console.log('posts!');
       if (!req.isAuth) {
         const error = new Error('認証されていません');
         error.code = 401;
         throw error;
       }
+      if (!args.page) {
+        args.page = 1;
+      }
+      const perPage = 2;
       const response = await Post.findAndCountAll({
+        offset: (args.page - 1) * perPage,
+        limit: perPage,
         order: [
           ['createdAt', 'DESC']
         ],
@@ -127,18 +132,7 @@ module.exports = {
       });
       const totalPosts = response.count;
       const posts = response.rows;
-
-      console.log(posts);
-
       return {
-        // posts: posts.map(p => {
-        //   return {
-        //     ...p._doc,
-        //     id: p.id.toString(),
-        //     createdAt: p.createdAt.toISOString(),
-        //     updatedAt: p.updatedAt.toISOString(),
-        //   }
-        // }),
         posts: posts,
         totalPosts: totalPosts,
       }
