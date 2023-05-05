@@ -135,6 +135,7 @@ module.exports = {
       return {
         posts: posts,
         totalPosts: totalPosts,
+        totalPages: Math.ceil(totalPosts / perPage),
       }
     } catch (err) {
       console.error(err);

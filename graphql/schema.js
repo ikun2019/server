@@ -17,6 +17,7 @@ module.exports = buildSchema(`
   type PostData {
     posts: [Post!]!
     totalPosts: Int!
+    totalPages: Int!
   }
   type User {
     id: ID!
