@@ -57,17 +57,19 @@ const fileFilter = (req, file, cb) => {
     cb(null, false);
   }
 };
+const upload = multer({ storage: fileStorage, fileFilter: fileFilter });
 
 // * appの設定
 app.use(express.urlencoded({ extended: false }));
-app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'));
-app.use('/images', express.static(path.join(__dirname, 'images')));
-app.use(express.json());
 app.use(cors({
   origin: 'http://localhost:8080',
   optionsSuccessStatus: 200,
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'PUT', 'POST', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use(express.json());
 app.use(session({
   secret: process.env.SESSION_SECRET,
   store: store,
@@ -92,6 +94,11 @@ app.use('/graphql', graphqlHTTP({
     return { message: message, status: code, data: data };
   },
 }));
+app.use('/upload', upload.single('image'), (req, res) => {
+  res.status(200).json({
+    url: `http://localhost:3000/images/${req.file.filename}`
+  });
+});
 
 // * routerのマウント
 // app.use('/api/admin', adminRouter);

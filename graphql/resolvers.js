@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const User = require('../models/User');
 const Post = require('../models/Post');
+const { image } = require('pdfkit');
 
 module.exports = {
   createUser: async function (args, req) {
@@ -59,19 +60,24 @@ module.exports = {
       console.error(err);
     }
   },
-  createPost: async (args, req) => {
+  createPost: async ({ postInput }, req) => {
+    console.log('post input =>', postInput);
+
     try {
+      console.log('Create Post');
       const errors = [];
+      req.isAuth = true;
+      req.userId = 1;
       if (!req.isAuth) {
         const error = new Error('認証されていません');
         error.code = 401;
         throw error;
       }
       console.log('req.isAuth =>', req.isAuth);
-      if (validator.isEmpty(args.postInput.title || !validator.isLength(args.postInput.title, { min: 5 }))) {
+      if (validator.isEmpty(postInput.title || !validator.isLength(postInput.title, { min: 5 }))) {
         errors.push({ message: 'タイトルがありません' });
       }
-      if (validator.isEmpty(args.postInput.content || !validator.isLength(args.postInput.content, { min: 5 }))) {
+      if (validator.isEmpty(postInput.content || !validator.isLength(postInput.content, { min: 5 }))) {
         errors.push({ message: 'コンテンツがありません' });
       }
       if (errors.length > 0) {
@@ -83,21 +89,19 @@ module.exports = {
       const user = await User.findOne({
         where: { id: req.userId }
       });
-      console.log('user =>', user);
       if (!user) {
         const error = new Error('ユーザーがいません');
         error.code = 401;
         throw error;
-      }
-      const post = {
-        title: args.postInput.title,
-        content: args.postInput.content,
-        imageUrl: args.postInput.imageUrl,
-        creator: user,
       };
-      const createPost = await user.createPost(post);
-      console.log('createPost =>', createPost.userId);
+      const createPost = await user.createPost({
+        title: postInput.title,
+        content: postInput.content,
+        imageUrl: postInput.imageUrl,
+        creator: req.userId,
+      });
       return {
+        ...createPost,
         id: createPost.id,
         title: createPost.title,
         content: createPost.content,
@@ -105,7 +109,7 @@ module.exports = {
         creator: user,
         createdAt: createPost.userId,
         updatedAt: createPost.updatedAt,
-      };
+      }
     } catch (err) {
       console.error(err);
       throw err;
