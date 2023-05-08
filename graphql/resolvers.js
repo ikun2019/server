@@ -61,8 +61,6 @@ module.exports = {
     }
   },
   createPost: async ({ postInput }, req) => {
-    console.log('post input =>', postInput);
-
     try {
       console.log('Create Post');
       const errors = [];
@@ -140,6 +138,35 @@ module.exports = {
         posts: posts,
         totalPosts: totalPosts,
         totalPages: Math.ceil(totalPosts / perPage),
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  },
+  getPost: async ({ id }, req) => {
+    try {
+      if (!req.isAuth) {
+        const error = new Error('認証されていません');
+        error.code = 401;
+        throw error;
+      }
+      const post = await Post.findOne({
+        where: { id: id },
+        include: [{ model: User }],
+      });
+      if (!post) {
+        const error = new Error('postが見つかりません');
+        error.code = 404;
+        throw error;
+      }
+      return {
+        ...post,
+        id: post.id,
+        title: post.title,
+        content: post.content,
+        imageUrl: post.imageUrl,
+        createdAt: post.createdAt,
+        updatedAt: post.updatedAt,
       }
     } catch (err) {
       console.error(err);
