@@ -172,4 +172,57 @@ module.exports = {
       console.error(err);
     }
   },
+  updatePost: async ({ id, postInput }, req) => {
+    console.log('id =>', id);
+    console.log('postInput =>', postInput);
+    try {
+      const errors = [];
+      if (!req.isAuth) {
+        const error = new Error('認証されていません');
+        error.code = 401;
+        throw error;
+      }
+      const post = await Post.findOne({
+        where: { id: id }
+      });
+      console.log('post =>', post);
+      if (!post) {
+        const error = new Error('postが見つかりません');
+        error.code = 404;
+        throw error;
+      }
+      if (post.userId !== req.userId) {
+        const error = new Error('認証情報が相違します');
+        error.code = 403;
+        throw error;
+      }
+      if (validator.isEmpty(postInput.title || !validator.isLength(postInput.title, { min: 5 }))) {
+        errors.push({ message: 'タイトルがありません' });
+      }
+      if (validator.isEmpty(postInput.content || !validator.isLength(postInput.content, { min: 5 }))) {
+        errors.push({ message: 'コンテンツがありません' });
+      }
+      if (errors.length > 0) {
+        const error = new Error('Invalid input');
+        error.data = errors;
+        error.code = 422;
+        throw error;
+      }
+      post.title = postInput.title;
+      post.content = postInput.content;
+      if (postInput.imageUrl !== 'undefined') {
+        post.imageUrl = postInput.imageUrl;
+      }
+      const updatePost = await post.save();
+      return {
+        id: post.id,
+        title: post.title,
+        content: post.content,
+        imageUrl: post.imageUrl,
+      };
+    } catch (err) {
+      console.error('Server Error');
+      console.error(err);
+    }
+  }
 }
