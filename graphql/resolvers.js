@@ -3,6 +3,7 @@ const validator = require('validator');
 const User = require('../models/User');
 const Post = require('../models/Post');
 const { image } = require('pdfkit');
+const { clearImage } = require('../util/file');
 
 module.exports = {
   createUser: async function (args, req) {
@@ -224,5 +225,30 @@ module.exports = {
       console.error('Server Error');
       console.error(err);
     }
-  }
+  },
+  deletePost: async ({ id }, req) => {
+    if (!req.isAuth) {
+      const error = new Error('認証されていません');
+      error.code = 401;
+      throw error;
+    }
+    const post = await Post.findOne({
+      where: { id: id },
+      include: [{ model: User }]
+    });
+    if (!post) {
+      const error = new Error('postがありません');
+      error.code = 404;
+      throw error;
+    }
+    if (post.userId !== req.userId) {
+      const error = new Error('認証されていません');
+      error.code = 403;
+      throw error;
+    }
+    // 画像の削除
+    clearImage(post.imageUrl);
+    await post.destroy();
+    return true;
+  },
 }

@@ -10,6 +10,7 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const auth = require('./middlewares/auth');
+const { clearImage } = require('./util/file');
 
 const { graphqlHTTP } = require('express-graphql');
 const graphqlSchema = require('./graphql/schema');
