@@ -251,4 +251,31 @@ module.exports = {
     await post.destroy();
     return true;
   },
+  user: async (args, req) => {
+    try {
+      req.isAuth = true;
+      req.userId = 1;
+      if (!req.isAuth) {
+        const error = new Error('認証されていません');
+        error.code = 401;
+        throw error;
+      }
+      const user = await User.findOne({
+        where: { id: req.userId }
+      });
+      console.log(user);
+      if (!user) {
+        const error = new Error('userが見つかりません');
+        error.code = 404;
+        throw error;
+      }
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
 }
